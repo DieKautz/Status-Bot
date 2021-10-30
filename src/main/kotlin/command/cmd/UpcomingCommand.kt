@@ -41,7 +41,7 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
 
         when (SeriesObserver.getState()) {
             SeriesObserver.State.AWAITING_SERIES_START -> {
-                embed.setDescription("We are currently awaiting the start on series No.${SeriesObserver.currentSeriesNum} 🤗")
+                embed.setDescription("We are currently awaiting the start of series No.${SeriesObserver.currentSeriesNum} 🤗")
             }
             SeriesObserver.State.WAITING_BETWEEN -> {
                 showRegisterBtn = true
@@ -60,8 +60,8 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
             SeriesObserver.State.SERIES_CONCLUDED -> {
                 embed.setTitle("NONE")
                 embed.setDescription(
-                    "The last series has sadly come to an end 😢.\n" +
-                            "But you can still practice on the old sets in the mean time! ☺️"
+                    "The last series has sadly come to an end. 😢\n" +
+                            "But you can still practice on the old sets in the mean time!"
                 )
             }
         }

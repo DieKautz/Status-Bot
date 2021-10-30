@@ -42,7 +42,7 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
             SeriesObserver.State.AWAITING_SERIES_START -> {
                 embed.setColor(Color.YELLOW)
                     .setDescription(
-                        "We are currently awaiting the start on series No.${SeriesObserver.currentSeriesNum} 🤗\n" +
+                        "We are currently awaiting the start of series No.${SeriesObserver.currentSeriesNum} 🤗\n" +
                                 "Its set to start at <t:${nextChallenge.date.epochSeconds}>"
                     )
                     .setTimestamp(nextChallenge.date.toJavaInstant())
