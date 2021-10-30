@@ -16,7 +16,7 @@ fun main() {
 
     SeriesObserver.fetchSeries()
 
-    val slashCmdHandler = SlashCommandHandler(
+    SlashCommandHandler(
         api, listOf(
             StatusCommand(),
             UpcomingCommand(),
