@@ -4,7 +4,10 @@ import command.cmd.StatusCommand
 import command.cmd.UpcomingCommand
 import command.util.SeriesObserver
 import org.javacord.api.DiscordApiBuilder
+import org.slf4j.LoggerFactory
 import kotlin.time.ExperimentalTime
+
+private val log = LoggerFactory.getLogger("MAIN")
 
 @OptIn(ExperimentalTime::class)
 fun main() {

@@ -1,18 +1,18 @@
 package command
 
 import command.cmd.RefetchCommand
-import org.apache.logging.log4j.LogManager
 import org.javacord.api.DiscordApi
 import org.javacord.api.event.interaction.SlashCommandCreateEvent
 import org.javacord.api.interaction.ServerSlashCommandPermissionsBuilder
 import org.javacord.api.interaction.SlashCommandPermissionType
 import org.javacord.api.interaction.SlashCommandPermissions
 import org.javacord.api.listener.interaction.SlashCommandCreateListener
+import org.slf4j.LoggerFactory
 
 class SlashCommandHandler(private val api: DiscordApi, private val commands: List<SlashCommand>) :
     SlashCommandCreateListener {
 
-    private val log = LogManager.getLogger(javaClass)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     init {
         registerCommands()

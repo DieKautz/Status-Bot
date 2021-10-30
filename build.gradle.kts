@@ -15,8 +15,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.apache.logging.log4j:log4j-api:2.14.1")
     implementation("org.apache.logging.log4j:log4j-core:2.14.1")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.14.1")
+    implementation("ch.qos.logback:logback-classic:1.2.6")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.1")

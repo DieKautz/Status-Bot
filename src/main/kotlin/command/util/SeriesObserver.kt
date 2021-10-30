@@ -11,11 +11,11 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.until
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 
 object SeriesObserver {
 
-    private val log = LogManager.getLogger(javaClass)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     var currentSeriesNum: Int = 4
     private lateinit var currentSeries: Series
