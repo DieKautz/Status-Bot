@@ -1,6 +1,7 @@
 package command
 
 import command.cmd.RefetchCommand
+import org.apache.logging.log4j.LogManager
 import org.javacord.api.DiscordApi
 import org.javacord.api.event.interaction.SlashCommandCreateEvent
 import org.javacord.api.interaction.ServerSlashCommandPermissionsBuilder
@@ -10,6 +11,9 @@ import org.javacord.api.listener.interaction.SlashCommandCreateListener
 
 class SlashCommandHandler(private val api: DiscordApi, private val commands: List<SlashCommand>) :
     SlashCommandCreateListener {
+
+    private val log = LogManager.getLogger(javaClass)
+
     init {
         registerCommands()
         api.addSlashCommandCreateListener(this)
@@ -18,10 +22,13 @@ class SlashCommandHandler(private val api: DiscordApi, private val commands: Lis
     override fun onSlashCommandCreate(event: SlashCommandCreateEvent?) {
         if (event == null) return
         val interaction = event.slashCommandInteraction
-        commands.first { it.name == interaction.commandName }.handle(interaction)
+        val cmd = commands.first { it.name == interaction.commandName }
+        log.info("Dispatching ${interaction.commandName}[${interaction.commandId}] to ${cmd.javaClass.typeName}")
+        cmd.handle(interaction)
     }
 
     private fun registerCommands() {
+        log.info("Telling Discord about slash commands")
         api.bulkOverwriteGlobalSlashCommands(
             commands.map { it.toSlashCommandBuilder() }
         ).join()

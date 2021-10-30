@@ -2,12 +2,17 @@ package command.cmd
 
 import command.SlashCommand
 import command.util.SeriesObserver
+import org.apache.logging.log4j.LogManager
 import org.javacord.api.interaction.SlashCommandInteraction
 import org.javacord.api.interaction.SlashCommandOption
 import org.javacord.api.interaction.SlashCommandOptionType
 
 class RefetchCommand : SlashCommand("refetch", "Refetch current series data from this endpoint.") {
+
+    private val log = LogManager.getLogger(javaClass)
+
     override fun handle(interaction: SlashCommandInteraction) {
+        log.warn("received refetch command from ${interaction.user.discriminatedName}" + if (interaction.server.isPresent) " on ${interaction.server.get().name}" else "")
 
         interaction.respondLater().thenAccept {
             it.setContent("Fetching...").update()
@@ -16,6 +21,7 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
                 val url = interaction.firstOptionStringValue.get()
                 SeriesObserver.fetchSeries(url)
             }.onFailure {
+                log.error("refetch failed with ${it.message}")
                 interaction.createFollowupMessageBuilder()
                     .setContent("Failed! `${it.message}`")
                     .send()

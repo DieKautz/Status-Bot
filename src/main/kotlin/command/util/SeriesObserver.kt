@@ -11,14 +11,19 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.until
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.apache.logging.log4j.LogManager
 
 object SeriesObserver {
+
+    private val log = LogManager.getLogger(javaClass)
+
     var currentSeriesNum: Int = 4
     private lateinit var currentSeries: Series
     lateinit var challenges: List<Challenge>
 
     private val httpClient = HttpClient()
     fun fetchSeries(seriesEndpoint: String = "https://api.stellar.quest/utils/series?series=$currentSeriesNum") {
+        log.info("Fetching series data from endpoint ($seriesEndpoint)")
         currentSeriesNum = Url(seriesEndpoint).parameters["series"]?.toInt()!!
         runBlocking {
             val response: String = httpClient.get(seriesEndpoint)
@@ -26,6 +31,8 @@ object SeriesObserver {
             parsed.challenges.sortedBy { it.date }
             challenges = parsed.challenges
             currentSeries = parsed
+            log.info("Successfully updated series! Loaded ${challenges.count()} in series No. $currentSeriesNum")
+            log.info("NEW state is ${getState()}")
         }
     }
 
