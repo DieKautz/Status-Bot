@@ -22,7 +22,6 @@ class SlashCommandHandler(private val api: DiscordApi, private val commands: Lis
     }
 
     private fun registerCommands() {
-        api.globalSlashCommands.join().forEach { it.deleteGlobal().join() }
         api.bulkOverwriteGlobalSlashCommands(
             commands.map { it.toSlashCommandBuilder() }
         ).join()
