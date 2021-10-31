@@ -21,6 +21,7 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
             it.date.epochSeconds > Clock.System.now().epochSeconds
         }
         val nextChallenge = SeriesObserver.getNext() ?: SeriesObserver.challenges.first()
+        val lastChallenge = SeriesObserver.getPrev() ?: SeriesObserver.challenges.last()
 
         val embed = EmbedBuilder()
             .setAuthor("Next Up:")
@@ -51,11 +52,14 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
                 showRegisterBtn = true
                 registerBtnBuilder.setDisabled(false)
                 registerBtnBuilder.setEmoji("🚀")
-                embed.addField("", "You can register now!")
+                embed.setDescription("You can register now! The challenge will start <t:${nextChallenge.date.epochSeconds}:R>")
             }
             SeriesObserver.State.RUNNING -> {
                 showPracticeBtn = false
-                embed.addField("", "(There is also one running *right now*!)")
+                embed.setDescription(
+                    "This challenge starts <t:${nextChallenge.date.epochSeconds}:R> \n" +
+                            "But there is also one running **right now** started <t:${lastChallenge.date.epochSeconds}:R>"
+                )
             }
             SeriesObserver.State.SERIES_CONCLUDED -> {
                 embed.setTitle("NONE")

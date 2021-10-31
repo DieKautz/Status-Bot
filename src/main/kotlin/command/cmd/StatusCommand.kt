@@ -49,18 +49,19 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
             }
             SeriesObserver.State.WAITING_BETWEEN -> {
                 embed.setColor(Color.YELLOW)
-                    .setDescription("The last challenge has already concluded. Next one will be at <t:${nextChallenge.date.epochSeconds}:F>")
+                    .setDescription("The previous challenge has already concluded. Next one will be at <t:${nextChallenge.date.epochSeconds}:F>")
                     .setTimestamp(nextChallenge.date.toJavaInstant())
             }
             SeriesObserver.State.REGISTRATION -> {
+                registerBtnBuilder.setDisabled(false)
                 arBuilder.addComponents(registerBtnBuilder.build())
                 embed.setColor(Color.CYAN)
-                    .setDescription("You can *register* right now. The challenge will start <t:${nextChallenge.date.epochSeconds}:R>")
+                    .setDescription("You can **register right now**. The challenge will start <t:${nextChallenge.date.epochSeconds}:R>")
                     .setTimestamp(nextChallenge.date.toJavaInstant())
             }
             SeriesObserver.State.RUNNING -> {
                 embed.setColor(Color.GREEN)
-                    .setDescription("THERE IS an LIVE Quest currently, if you registered in time you can still compete!")
+                    .setDescription("**There is an LIVE Quest** right now, if you registered in time you can still compete!")
                     .setTimestamp(nextChallenge.date.toJavaInstant())
                 registerBtnBuilder
                     .setLabel("Play Now!")
