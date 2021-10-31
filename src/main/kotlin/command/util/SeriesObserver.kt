@@ -22,17 +22,31 @@ object SeriesObserver {
     lateinit var challenges: List<Challenge>
 
     private val httpClient = HttpClient()
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
+
     fun fetchSeries(seriesEndpoint: String = "https://api.stellar.quest/utils/series?series=$currentSeriesNum") {
         log.info("Fetching series data from endpoint ($seriesEndpoint)")
         currentSeriesNum = Url(seriesEndpoint).parameters["series"]?.toInt()!!
         runBlocking {
-            val response: String = httpClient.get(seriesEndpoint)
-            val parsed = Json.decodeFromString<Series>(response)
-            parsed.challenges.sortedBy { it.date }
-            challenges = parsed.challenges
-            currentSeries = parsed
-            log.info("Successfully updated series! Loaded ${challenges.count()} in series No. $currentSeriesNum")
-            log.info("NEW state is ${getState()}")
+            var response = ""
+            runCatching {
+                response = httpClient.get(seriesEndpoint)
+            }.onFailure {
+                throw IllegalArgumentException("Invalid URL provided!")
+            }
+            runCatching {
+                val parsed = json.decodeFromString<Series>(response)
+                parsed.challenges.sortedBy { it.date }
+                challenges = parsed.challenges
+                currentSeries = parsed
+            }.onFailure {
+                throw IllegalStateException("Invalid JSON at endpoint: ${it.message}")
+            }.onSuccess {
+                log.info("Successfully updated series! Loaded ${challenges.count()} in series No. $currentSeriesNum")
+                log.info("NEW state is ${getState()}")
+            }
         }
     }
 

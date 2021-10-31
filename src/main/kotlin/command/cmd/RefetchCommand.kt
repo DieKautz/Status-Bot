@@ -23,7 +23,7 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
             }.onFailure {
                 log.error("refetch failed with ${it.message}")
                 interaction.createFollowupMessageBuilder()
-                    .setContent("Failed! `${it.message}`")
+                    .setContent("*Refetch failed* `${it.message}`")
                     .send()
             }.onSuccess {
                 interaction.createFollowupMessageBuilder()
