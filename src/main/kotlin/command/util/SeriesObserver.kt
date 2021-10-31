@@ -63,10 +63,10 @@ object SeriesObserver {
         }
         val prevChallenge = getPrev()!!
         val nextChallenge = getNext()!!
-        if (prevChallenge.date.until(now, DateTimeUnit.HOUR) <= 24) {
+        if (prevChallenge.date.until(now, DateTimeUnit.HOUR) < 24) {
             return State.RUNNING
         }
-        if (now.until(nextChallenge.date, DateTimeUnit.HOUR) <= 1) {
+        if (now.until(nextChallenge.date, DateTimeUnit.MINUTE) < 60) {
             return State.REGISTRATION
         }
         return State.WAITING_BETWEEN
