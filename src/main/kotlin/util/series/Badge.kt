@@ -1,4 +1,4 @@
-package command.util.series
+package util.series
 
 import kotlinx.serialization.Serializable
 

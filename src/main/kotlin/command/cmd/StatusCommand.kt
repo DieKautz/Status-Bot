@@ -1,7 +1,6 @@
 package command.cmd
 
 import command.SlashCommand
-import command.util.SeriesObserver
 import kotlinx.datetime.toJavaInstant
 import org.javacord.api.entity.message.component.ActionRowBuilder
 import org.javacord.api.entity.message.component.Button
@@ -9,6 +8,7 @@ import org.javacord.api.entity.message.component.ButtonBuilder
 import org.javacord.api.entity.message.component.ButtonStyle
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.interaction.SlashCommandInteraction
+import util.SeriesObserver
 import java.awt.Color
 import kotlin.time.ExperimentalTime
 

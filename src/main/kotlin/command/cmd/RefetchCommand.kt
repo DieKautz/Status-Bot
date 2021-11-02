@@ -1,11 +1,11 @@
 package command.cmd
 
 import command.SlashCommand
-import command.util.SeriesObserver
 import org.javacord.api.interaction.SlashCommandInteraction
 import org.javacord.api.interaction.SlashCommandOption
 import org.javacord.api.interaction.SlashCommandOptionType
 import org.slf4j.LoggerFactory
+import util.SeriesObserver
 
 class RefetchCommand : SlashCommand("refetch", "Refetch current series data from this endpoint.") {
 

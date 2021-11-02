@@ -1,7 +1,5 @@
-package command.util
+package util
 
-import command.util.series.Challenge
-import command.util.series.Series
 import io.ktor.client.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
@@ -11,6 +9,8 @@ import kotlinx.datetime.until
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
+import util.series.Challenge
+import util.series.Series
 
 object SeriesObserver {
 
