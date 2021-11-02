@@ -22,6 +22,7 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
             runCatching {
                 val url = interaction.firstOptionStringValue.get()
                 SeriesObserver.fetchSeries(url)
+                SeriesObserver.currentSeriesNum = interaction.secondOptionIntValue.get()
             }.onFailure {
                 log.error("refetch failed with ${it.message}")
                 interactionResponseUpdater
@@ -45,6 +46,12 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
                         SlashCommandOptionType.STRING,
                         "url",
                         "Stellar Quest api endpoint to fetch current series data from.",
+                        true
+                    ),
+                    SlashCommandOption.create(
+                        SlashCommandOptionType.INTEGER,
+                        "num",
+                        "Number of the current series to fetch.",
                         true
                     )
                 )

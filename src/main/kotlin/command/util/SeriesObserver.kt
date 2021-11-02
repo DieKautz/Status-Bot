@@ -4,7 +4,6 @@ import command.util.series.Challenge
 import command.util.series.Series
 import io.ktor.client.*
 import io.ktor.client.request.*
-import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -17,6 +16,7 @@ object SeriesObserver {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
+    var currentFetchUrl: String = System.getenv("FETCH_URL")
     var currentSeriesNum: Int = 4
     private lateinit var currentSeries: Series
     lateinit var challenges: List<Challenge>
@@ -26,9 +26,8 @@ object SeriesObserver {
         ignoreUnknownKeys = true
     }
 
-    fun fetchSeries(seriesEndpoint: String = "https://api.stellar.quest/utils/series?series=$currentSeriesNum") {
+    fun fetchSeries(seriesEndpoint: String = currentFetchUrl) {
         log.info("Fetching series data from endpoint ($seriesEndpoint)")
-        currentSeriesNum = Url(seriesEndpoint).parameters["series"]?.toInt()!!
         runBlocking {
             var response = ""
             runCatching {
@@ -43,10 +42,10 @@ object SeriesObserver {
                 currentSeries = parsed
             }.onFailure {
                 throw IllegalStateException("Invalid JSON at endpoint: ${it.message}")
-            }.onSuccess {
-                log.info("Successfully updated series! Loaded ${challenges.count()} in series No. $currentSeriesNum")
-                log.info("NEW state is ${getState()}")
             }
+            currentFetchUrl = seriesEndpoint
+            log.info("Successfully updated series! Loaded ${challenges.count()} in series No. $currentSeriesNum")
+            log.info("NEW state is ${getState()}")
         }
     }
 
