@@ -33,14 +33,18 @@ class SlashCommandHandler(private val api: DiscordApi, private val commands: Lis
             commands.map { it.toSlashCommandBuilder() }
         ).join()
 
-        val ownerId = 290464744794750976
+        val ownerId = 290464744794750976 //DieKautz#3846
+        val lumenaryGid = 836587722185375784
         val refetchCmdId = api.globalSlashCommands.join().first { it.name == RefetchCommand().name }.id
         api.servers.forEach { srv ->
             api.batchUpdateSlashCommandPermissions(
                 srv, mutableListOf(
                     ServerSlashCommandPermissionsBuilder(
                         refetchCmdId,
-                        listOf(SlashCommandPermissions.create(ownerId, SlashCommandPermissionType.USER, true))
+                        listOf(
+                            SlashCommandPermissions.create(ownerId, SlashCommandPermissionType.USER, true),
+                            SlashCommandPermissions.create(lumenaryGid, SlashCommandPermissionType.ROLE, true)
+                        )
                     )
                 )
             )
