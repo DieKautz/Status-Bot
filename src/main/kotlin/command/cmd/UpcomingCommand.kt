@@ -37,45 +37,50 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
             .setDisabled(true)
             .setStyle(ButtonStyle.LINK)
 
-        var showRegisterBtn = false
-        var showPracticeBtn = true
+        val arBuilder = ActionRowBuilder()
 
         when (SeriesObserver.getState()) {
             SeriesObserver.State.AWAITING_SERIES_START -> {
+                arBuilder.addComponents(practiceBtn)
                 embed.setDescription("We are currently awaiting the start of series No.${SeriesObserver.currentSeriesNum} 🤗")
             }
             SeriesObserver.State.WAITING_BETWEEN -> {
-                showRegisterBtn = true
+                arBuilder.addComponents(practiceBtn, registerBtnBuilder.build())
             }
             SeriesObserver.State.REGISTRATION -> {
-                showPracticeBtn = false
-                showRegisterBtn = true
-                registerBtnBuilder.setDisabled(false)
-                registerBtnBuilder.setEmoji("🚀")
+                registerBtnBuilder
+                    .setDisabled(false)
+                    .setEmoji("🚀")
+                arBuilder.addComponents(registerBtnBuilder.build())
                 embed.setDescription("You can register now! The challenge will start <t:${nextChallenge.date.epochSeconds}:R>")
             }
             SeriesObserver.State.RUNNING -> {
-                showPracticeBtn = false
+                arBuilder.addComponents(practiceBtn)
+                registerBtnBuilder
+                    .setDisabled(false)
+                    .setEmoji("🚀")
+                    .setLabel("Play Now!")
+                arBuilder.addComponents(registerBtnBuilder.build())
                 embed.setDescription(
-                    "This challenge starts <t:${nextChallenge.date.epochSeconds}:R> \n" +
-                            "But there is also one running **right now** started <t:${lastChallenge.date.epochSeconds}:R>"
+                    "This challenge starts <t:${nextChallenge.date.epochSeconds}:R>. \n" +
+                            "But there is also one still running **right now** started <t:${lastChallenge.date.epochSeconds}:R>"
                 )
             }
             SeriesObserver.State.SERIES_CONCLUDED -> {
+                arBuilder.addComponents(practiceBtn)
                 embed.setTitle("NONE")
                 embed.setDescription(
-                    "The last series has sadly come to an end. 😢\n" +
+                    "The last series has sadly come to an end 😢.\n" +
                             "But you can still practice on the old sets in the mean time!"
                 )
             }
         }
-        val arBuilder = ActionRowBuilder()
-        if (showPracticeBtn) arBuilder.addComponents(practiceBtn)
-        if (showRegisterBtn) arBuilder.addComponents(registerBtnBuilder.build())
 
-        interaction.createImmediateResponder()
+        val responder = interaction.createImmediateResponder()
             .addEmbed(embed)
-            .addComponents(arBuilder.build())
-            .respond()
+        if (arBuilder.components.size > 0) {
+            responder.addComponents(arBuilder.build())
+        }
+        responder.respond()
     }
 }
