@@ -12,7 +12,7 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun handle(interaction: SlashCommandInteraction) {
-        log.warn("received refetch command from ${interaction.user.discriminatedName}" + if (interaction.server.isPresent) " on ${interaction.server.get().name}" else "")
+        log.warn("refetch requested from ${interaction.user.discriminatedName}")
 
         interaction.respondLater().thenAccept { interactionResponseUpdater ->
             interactionResponseUpdater
