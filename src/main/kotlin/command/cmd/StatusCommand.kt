@@ -62,7 +62,7 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
             SeriesObserver.State.RUNNING -> {
                 embed.setColor(Color.GREEN)
                     .setDescription("**There is an LIVE Quest** right now, if you registered in time you can still compete!")
-                    .setTimestamp(nextChallenge.date.toJavaInstant())
+                    .setTimestamp(prevChallenge.date.toJavaInstant())
                 registerBtnBuilder
                     .setLabel("Play Now!")
                     .setEmoji("🚀")
@@ -71,7 +71,8 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
             }
             SeriesObserver.State.SERIES_CONCLUDED -> {
                 embed.setColor(Color.ORANGE)
-                embed.setDescription("The last series concluded <t:${prevChallenge.date.epochSeconds}:R> and there is no active challenge right now, but you can still practice with older sets.")
+                    .setDescription("The last series concluded <t:${prevChallenge.date.epochSeconds}:R> and there is no active challenge right now, but you can still practice with older sets.")
+                    .setTimestamp(prevChallenge.date.toJavaInstant())
             }
         }
 
