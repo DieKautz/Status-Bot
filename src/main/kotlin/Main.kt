@@ -26,4 +26,7 @@ fun main() {
             RefetchCommand(),
         )
     )
+
+    val srv = api.getServerById(System.getenv("TIMER_SERVER_ID")).get()
+    NicknameCountdown.startTimer(srv)
 }

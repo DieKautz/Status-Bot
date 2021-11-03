@@ -1,5 +1,6 @@
 package command.cmd
 
+import NicknameCountdown
 import command.SlashCommand
 import org.javacord.api.interaction.SlashCommandInteraction
 import org.javacord.api.interaction.SlashCommandOption
@@ -32,6 +33,7 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
                 interactionResponseUpdater
                     .setContent("Successfully loaded ${SeriesObserver.challenges.count()} challenges of Series No.${SeriesObserver.currentSeriesNum} from `${interaction.firstOptionStringValue.get()}`")
                     .update()
+                NicknameCountdown.forceUpdatePersona()
             }
         }
 

@@ -52,6 +52,9 @@ object SeriesObserver {
     fun getPrev(): Challenge? = challenges.lastOrNull { it.date < Clock.System.now() }
     fun getNext(): Challenge? = challenges.firstOrNull { it.date > Clock.System.now() }
 
+    fun prevIndex(): Int = challenges.indexOfLast { it.date < Clock.System.now() }
+    fun nextIndex(): Int = challenges.indexOfFirst { it.date > Clock.System.now() }
+
     fun getState(): State {
         val now = Clock.System.now()
         if (now <= challenges.first().date) {
