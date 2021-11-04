@@ -56,8 +56,8 @@ object NicknameCountdown {
 
         val nickname = when(SeriesObserver.getState()) {
             AWAITING_SERIES_START, WAITING_BETWEEN -> {
-                if (lastState != currState) api.updateActivity(ActivityType.CUSTOM, "until $nextName")
-                diffTime.toString()
+                if (lastState != currState) api.updateActivity(ActivityType.CUSTOM, "до $nextName")
+                diffTime.minus(Duration.Companion.hours(1)).toString()
             }
             REGISTRATION -> {
                 if (lastState != currState) api.updateActivity(ActivityType.WATCHING, "registration")
