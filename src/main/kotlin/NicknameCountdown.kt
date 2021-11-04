@@ -36,9 +36,8 @@ object NicknameCountdown {
         val now = Clock.System.now()
         val nextName = "S${SeriesObserver.currentSeriesNum}Q${SeriesObserver.nextIndex()+1}"
 
-        val diffToNext = SeriesObserver.getNext()?.let { it.date.epochSeconds - now.epochSeconds }
-        val diffToPrev = SeriesObserver.getPrev()?.let { now.epochSeconds - it.date.epochSeconds }
-        val diffTime = Duration.Companion.seconds((diffToNext ?: diffToPrev!!)/10*10)
+        val diffToRelevant = now.epochSeconds - SeriesObserver.getRelevant().date.epochSeconds
+        val diffTime = Duration.Companion.seconds((diffToRelevant)/10*10)
 
         val newState = SeriesObserver.getState()
         if (newState != lastState) {
@@ -46,8 +45,13 @@ object NicknameCountdown {
             lastState = newState
             lastExec = 0
         }
-        if (diffTime.inWholeDays > 7 && (lastExec - now.epochSeconds) < 24*60*60 // refresh only hourly when >7days
-            || diffTime.inWholeHours > 48 && (lastExec - now.epochSeconds) < 24*60*60) return // refresh only every minute when >1hour
+
+        // cap nickname refreshes
+        if (diffTime.inWholeDays > 7 && (lastExec - now.epochSeconds) < 24*60*60 // refresh only daily when >7days
+                    || diffTime.inWholeHours > 48 && (lastExec - now.epochSeconds) < 60*60 // refresh only hourly minutes when >2 days
+                    || diffTime.inWholeMinutes > 120 && (lastExec - now.epochSeconds) < 60*5 // refresh only every 5 minutes when >2 hours
+        ) {return}
+
         val nickname = when(SeriesObserver.getState()) {
             AWAITING_SERIES_START, WAITING_BETWEEN -> {
                 if (api.activity.isPresent) api.unsetActivity()
