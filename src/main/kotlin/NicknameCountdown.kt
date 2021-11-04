@@ -39,10 +39,9 @@ object NicknameCountdown {
         val diffToRelevant = now.epochSeconds - SeriesObserver.getRelevant().date.epochSeconds
         val diffTime = Duration.Companion.seconds((diffToRelevant)/10*10).absoluteValue
 
-        val newState = SeriesObserver.getState()
-        if (newState != lastState) {
-            log.info("state is now $newState")
-            lastState = newState
+        val currState = SeriesObserver.getState()
+        if (currState != lastState) {
+            log.info("state is now $currState")
             lastExec = 0
         }
 
@@ -57,23 +56,24 @@ object NicknameCountdown {
 
         val nickname = when(SeriesObserver.getState()) {
             AWAITING_SERIES_START, WAITING_BETWEEN -> {
-                if (api.activity.isPresent) api.unsetActivity()
-                "$diffTime until $nextName"
+                if (lastState != currState) api.updateActivity(ActivityType.CUSTOM, "until $nextName")
+                diffTime.toString()
             }
             REGISTRATION -> {
-                api.updateActivity(ActivityType.WATCHING, "registration")
+                if (lastState != currState) api.updateActivity(ActivityType.WATCHING, "registration")
                 "$diffTime until lobby opening"
             }
             RUNNING -> {
-                api.updateActivity(ActivityType.COMPETING, nextName)
+                if (lastState != currState) api.updateActivity(ActivityType.COMPETING, nextName)
                 val timeString = diffTime.toComponents { hours, minutes, _, _ -> "${hours}h ${minutes}m" }
                 "\uD83D\uDD34 LIVE ($timeString)"
             }
             SERIES_CONCLUDED -> {
-                if (api.activity.isPresent) api.unsetActivity()
+                if (lastState != currState) api.unsetActivity()
                 "Series ${SeriesObserver.currentSeriesNum} has concluded!"
             }
         }
         api.yourself.updateNickname(srv, nickname)
+        lastState = currState
     }
 }
