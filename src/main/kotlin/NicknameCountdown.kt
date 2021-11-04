@@ -37,7 +37,7 @@ object NicknameCountdown {
         val nextName = "S${SeriesObserver.currentSeriesNum}Q${SeriesObserver.nextIndex()+1}"
 
         val diffToRelevant = now.epochSeconds - SeriesObserver.getRelevant().date.epochSeconds
-        val diffTime = Duration.Companion.seconds((diffToRelevant)/10*10)
+        val diffTime = Duration.Companion.seconds((diffToRelevant)/10*10).absoluteValue
 
         val newState = SeriesObserver.getState()
         if (newState != lastState) {
@@ -63,7 +63,8 @@ object NicknameCountdown {
             }
             RUNNING -> {
                 api.updateActivity(ActivityType.COMPETING, nextName)
-                "$nextName running ($diffTime)"
+                val timeString = diffTime.toComponents { hours, minutes, _, _ -> "${hours}h ${minutes}m" }
+                "\uD83D\uDD34 LIVE ($timeString)"
             }
             SERIES_CONCLUDED -> {
                 if (api.activity.isPresent) api.unsetActivity()
