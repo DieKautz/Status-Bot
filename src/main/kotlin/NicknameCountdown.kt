@@ -62,6 +62,7 @@ object NicknameCountdown {
                 "$diffTime until lobby opening"
             }
             RUNNING -> {
+                api.updateActivity(ActivityType.COMPETING, nextName)
                 "$nextName running ($diffTime)"
             }
             SERIES_CONCLUDED -> {
