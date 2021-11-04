@@ -49,11 +49,17 @@ object SeriesObserver {
         }
     }
 
-    fun getPrev(): Challenge? = challenges.lastOrNull { it.date < Clock.System.now() }
-    fun getNext(): Challenge? = challenges.firstOrNull { it.date > Clock.System.now() }
+    private fun getPrev(): Challenge = challenges.last { it.date < Clock.System.now() }
+    fun getNext(): Challenge = challenges.first { it.date > Clock.System.now() }
 
-    fun prevIndex(): Int = challenges.indexOfLast { it.date < Clock.System.now() }
     fun nextIndex(): Int = challenges.indexOfFirst { it.date > Clock.System.now() }
+
+    fun getRelevant(): Challenge {
+        return when(getState()) {
+            State.RUNNING, State.SERIES_CONCLUDED -> getPrev()
+            else -> getNext()
+        }
+    }
 
     fun getState(): State {
         val now = Clock.System.now()
@@ -63,8 +69,8 @@ object SeriesObserver {
         if (now >= challenges.last().date) {
             return State.SERIES_CONCLUDED
         }
-        val prevChallenge = getPrev()!!
-        val nextChallenge = getNext()!!
+        val prevChallenge = getPrev()
+        val nextChallenge = getNext()
         if (prevChallenge.date.until(now, DateTimeUnit.HOUR) < 24) {
             return State.RUNNING
         }

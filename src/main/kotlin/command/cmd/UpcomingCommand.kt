@@ -20,15 +20,15 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
         val nextIndex = SeriesObserver.challenges.indexOfFirst {
             it.date.epochSeconds > Clock.System.now().epochSeconds
         }
-        val nextChallenge = SeriesObserver.getNext() ?: SeriesObserver.challenges.first()
-        val lastChallenge = SeriesObserver.getPrev() ?: SeriesObserver.challenges.last()
+        val nextChallenge = SeriesObserver.getNext()
+        val relevantChallenge = SeriesObserver.getRelevant()
 
         val embed = EmbedBuilder()
             .setAuthor("Next Up:")
             .setTitle("Quest ${nextIndex + 1}!")
-            .setDescription("This challenge starts <t:${nextChallenge.date.epochSeconds}:R>")
-            .setThumbnail("https://api.stellar.quest/badge/${nextChallenge.badges.main}")
-            .setTimestamp(nextChallenge.date.toJavaInstant())
+            .setDescription("This challenge starts <t:${relevantChallenge.date.epochSeconds}:R>")
+            .setThumbnail("https://api.stellar.quest/badge/${relevantChallenge.badges.main}")
+            .setTimestamp(relevantChallenge.date.toJavaInstant())
         val practiceBtn = Button.link("https://quest.stellar.org/play", "Practice Set 1-3", "🎯")
         val registerBtnBuilder = ButtonBuilder()
             .setUrl("https://quest.stellar.org/play/live")
@@ -52,7 +52,7 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
                     .setDisabled(false)
                     .setEmoji("🚀")
                 arBuilder.addComponents(registerBtnBuilder.build())
-                embed.setDescription("You can register now! The challenge will start <t:${nextChallenge.date.epochSeconds}:R>")
+                embed.setDescription("You can register now! The challenge will start <t:${relevantChallenge.date.epochSeconds}:R>")
             }
             SeriesObserver.State.RUNNING -> {
                 arBuilder.addComponents(practiceBtn)
@@ -63,7 +63,7 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
                 arBuilder.addComponents(registerBtnBuilder.build())
                 embed.setDescription(
                     "This challenge starts <t:${nextChallenge.date.epochSeconds}:R>. \n" +
-                            "But there is also one still running **right now** started <t:${lastChallenge.date.epochSeconds}:R>"
+                            "But there is also one still running **right now** started <t:${relevantChallenge.date.epochSeconds}:R>"
                 )
             }
             SeriesObserver.State.SERIES_CONCLUDED -> {

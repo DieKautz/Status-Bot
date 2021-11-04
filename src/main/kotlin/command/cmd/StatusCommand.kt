@@ -18,11 +18,10 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
 
     override fun handle(interaction: SlashCommandInteraction) {
 
-        val nextChallenge = SeriesObserver.getNext() ?: SeriesObserver.challenges.first()
-        val prevChallenge = SeriesObserver.getPrev() ?: SeriesObserver.challenges.last()
+        val relevantChallenge = SeriesObserver.getRelevant()
 
         val embed = EmbedBuilder()
-            .setThumbnail("https://api.stellar.quest/badge/${nextChallenge.badges.main}")
+            .setThumbnail("https://api.stellar.quest/badge/${relevantChallenge.badges.main}")
             .setAuthor("Current Status")
             .setTitle("`${SeriesObserver.getState().name}`")
             .setColor(Color.GREEN)
@@ -43,26 +42,26 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
                 embed.setColor(Color.YELLOW)
                     .setDescription(
                         "We are currently awaiting the start of series No.${SeriesObserver.currentSeriesNum} 🤗\n" +
-                                "Its set to start at <t:${nextChallenge.date.epochSeconds}>"
+                                "Its set to start at <t:${relevantChallenge.date.epochSeconds}>"
                     )
-                    .setTimestamp(nextChallenge.date.toJavaInstant())
+                    .setTimestamp(relevantChallenge.date.toJavaInstant())
             }
             SeriesObserver.State.WAITING_BETWEEN -> {
                 embed.setColor(Color.YELLOW)
-                    .setDescription("The previous challenge has already concluded. Next one will be at <t:${nextChallenge.date.epochSeconds}:F>")
-                    .setTimestamp(nextChallenge.date.toJavaInstant())
+                    .setDescription("The previous challenge has already concluded. Next one will be at <t:${relevantChallenge.date.epochSeconds}:F>")
+                    .setTimestamp(relevantChallenge.date.toJavaInstant())
             }
             SeriesObserver.State.REGISTRATION -> {
                 registerBtnBuilder.setDisabled(false)
                 arBuilder.addComponents(registerBtnBuilder.build())
                 embed.setColor(Color.CYAN)
-                    .setDescription("You can **register right now**. The challenge will start <t:${nextChallenge.date.epochSeconds}:R>")
-                    .setTimestamp(nextChallenge.date.toJavaInstant())
+                    .setDescription("You can **register right now**. The challenge will start <t:${relevantChallenge.date.epochSeconds}:R>")
+                    .setTimestamp(relevantChallenge.date.toJavaInstant())
             }
             SeriesObserver.State.RUNNING -> {
                 embed.setColor(Color.GREEN)
                     .setDescription("**There is an LIVE Quest** right now, if you registered in time you can still compete!")
-                    .setTimestamp(prevChallenge.date.toJavaInstant())
+                    .setTimestamp(relevantChallenge.date.toJavaInstant())
                 registerBtnBuilder
                     .setLabel("Play Now!")
                     .setEmoji("🚀")
@@ -71,8 +70,8 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
             }
             SeriesObserver.State.SERIES_CONCLUDED -> {
                 embed.setColor(Color.ORANGE)
-                    .setDescription("The last series concluded <t:${prevChallenge.date.epochSeconds}:R> and there is no active challenge right now, but you can still practice with older sets.")
-                    .setTimestamp(prevChallenge.date.toJavaInstant())
+                    .setDescription("The last series concluded <t:${relevantChallenge.date.epochSeconds}:R> and there is no active challenge right now, but you can still practice with older sets.")
+                    .setTimestamp(relevantChallenge.date.toJavaInstant())
             }
         }
 
