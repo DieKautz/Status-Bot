@@ -48,7 +48,7 @@ object NicknameCountdown {
         // cap nickname refreshes
         if (diffTime.inWholeDays > 7 && (now.epochSeconds - lastExec) < 24*60*60 // refresh only daily when >7days
                     || diffTime.inWholeHours > 48 && (now.epochSeconds - lastExec) < 60*60 // refresh only hourly when >2 days
-                    || diffTime.inWholeMinutes > 120 && (now.epochSeconds - lastExec) < 60*5 // refresh only every 5 min when >2 hours
+                    || diffTime.inWholeMinutes > 120 && (now.epochSeconds - lastExec) < 60 // refresh only every min when >2 hours
                     || diffTime.inWholeSeconds > 120 && (now.epochSeconds - lastExec) < 30 // refresh only every 30 sec when >2 mins
                     || (now.epochSeconds - lastExec) < 10 // refresh only every 10 sec at most
         ) {return}
@@ -56,8 +56,8 @@ object NicknameCountdown {
 
         val nickname = when(SeriesObserver.getState()) {
             AWAITING_SERIES_START, WAITING_BETWEEN -> {
-                if (lastState != currState) api.updateActivity(ActivityType.CUSTOM, "until $nextName")
-                diffTime.toString()
+                if (lastState != currState) api.updateActivity(ActivityType.CUSTOM, "до $nextName")
+                diffTime.minus(Duration.Companion.hours(1)).toString()
             }
             REGISTRATION -> {
                 if (lastState != currState) api.updateActivity(ActivityType.WATCHING, "registration")
