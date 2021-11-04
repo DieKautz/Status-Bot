@@ -25,7 +25,7 @@ object NicknameCountdown {
     }
 
     var lastExec = 0L
-    var lastState = SeriesObserver.getState()
+    var lastState = SERIES_CONCLUDED
 
     fun forceUpdatePersona() {
         lastExec = 0
