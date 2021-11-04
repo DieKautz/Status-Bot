@@ -1,13 +1,12 @@
 import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
-import kotlinx.datetime.until
 import org.javacord.api.DiscordApi
 import org.javacord.api.entity.activity.ActivityType
 import org.javacord.api.entity.server.Server
 import org.slf4j.LoggerFactory
 import util.SeriesObserver
+import util.SeriesObserver.State.*
 import kotlin.concurrent.fixedRateTimer
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -25,49 +24,48 @@ object NicknameCountdown {
         }
     }
 
-    var lastExec: Instant = Instant.DISTANT_PAST
+    var lastExec = 0L
+    var lastState = SeriesObserver.getState()
 
     fun forceUpdatePersona() {
-        lastExec = Instant.DISTANT_PAST
+        lastExec = 0
         updatePersona()
     }
 
     private fun updatePersona() {
         val now = Clock.System.now()
         val nextName = "S${SeriesObserver.currentSeriesNum}Q${SeriesObserver.nextIndex()+1}"
-        val lastName = "S${SeriesObserver.currentSeriesNum}Q${SeriesObserver.prevIndex()+1}"
 
-        val diffToNext = SeriesObserver.getNext()?.date?.minus(now)
-        val diffToPrev = SeriesObserver.getPrev()?.date?.let { now.minus(it) }
-        val diffTime = diffToNext ?: diffToPrev!!
+        val diffToNext = SeriesObserver.getNext()?.let { it.date.epochSeconds - now.epochSeconds }
+        val diffToPrev = SeriesObserver.getPrev()?.let { now.epochSeconds - it.date.epochSeconds }
+        val diffTime = Duration.Companion.seconds((diffToNext ?: diffToPrev!!)/10*10)
 
-        if (diffTime.inWholeDays > 7 && lastExec.until(now, DateTimeUnit.HOUR) < 24
-            || diffTime.inWholeHours > 48 && lastExec.until(now, DateTimeUnit.MINUTE) < 60) return
+        val newState = SeriesObserver.getState()
+        if (newState != lastState) {
+            log.info("state is now $newState")
+            lastState = newState
+            lastExec = 0
+        }
+        if (diffTime.inWholeDays > 7 && (lastExec - now.epochSeconds) < 24*60*60 // refresh only hourly when >7days
+            || diffTime.inWholeHours > 48 && (lastExec - now.epochSeconds) < 24*60*60) return // refresh only every minute when >1hour
         val nickname = when(SeriesObserver.getState()) {
-            SeriesObserver.State.AWAITING_SERIES_START, SeriesObserver.State.WAITING_BETWEEN -> {
-                diffToNext!!.toComponents { days, hours, minutes, seconds, _ ->
-                    api.unsetActivity()
-                    "${days}d ${hours}h ${minutes}m ${seconds/10*10+10}s until $nextName"
-                }
+            AWAITING_SERIES_START, WAITING_BETWEEN -> {
+                if (api.activity.isPresent) api.unsetActivity()
+                "$diffTime until $nextName"
             }
-            SeriesObserver.State.REGISTRATION -> {
+            REGISTRATION -> {
                 api.updateActivity(ActivityType.WATCHING, "registration")
-                diffToNext!!.toComponents { minutes, seconds, _ ->
-                    "${minutes}m ${seconds/10*10+10}s until lobby opening"
-                }
+                "$diffTime until lobby opening"
             }
-            SeriesObserver.State.RUNNING -> {
-                api.updateActivity(ActivityType.COMPETING, lastName)
-                diffToPrev!!.toComponents { hours, minutes, seconds, _ ->
-                    "$nextName running (${hours}h ${minutes}m ${seconds/10*10+10}s)"
-                }
+            RUNNING -> {
+                "$nextName running ($diffTime)"
             }
-            SeriesObserver.State.SERIES_CONCLUDED -> {
-                api.unsetActivity()
+            SERIES_CONCLUDED -> {
+                if (api.activity.isPresent) api.unsetActivity()
                 "Series ${SeriesObserver.currentSeriesNum} has concluded!"
             }
         }
-        lastExec = now
+        lastExec = now.epochSeconds
         api.yourself.updateNickname(srv, nickname)
     }
 }
