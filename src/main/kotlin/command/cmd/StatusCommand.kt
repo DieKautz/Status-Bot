@@ -10,6 +10,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.interaction.SlashCommandInteraction
 import util.SeriesObserver
 import java.awt.Color
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 
@@ -37,31 +38,33 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
         val arBuilder = ActionRowBuilder()
             .addComponents(practiceBtn)
 
+        val registerTime = relevantChallenge.date.minus(Duration.Companion.hours(1))
+
         when (SeriesObserver.getState()) {
             SeriesObserver.State.AWAITING_SERIES_START -> {
                 embed.setColor(Color.YELLOW)
                     .setDescription(
                         "We are currently awaiting the start of series No.${SeriesObserver.currentSeriesNum} 🤗\n" +
-                                "Its set to start at <t:${relevantChallenge.date.epochSeconds}>"
+                                "Its set to start at <t:${registerTime.epochSeconds}>"
                     )
-                    .setTimestamp(relevantChallenge.date.toJavaInstant())
+                    .setTimestamp(registerTime.toJavaInstant())
             }
             SeriesObserver.State.WAITING_BETWEEN -> {
                 embed.setColor(Color.YELLOW)
-                    .setDescription("The previous challenge has already concluded. Next one will be at <t:${relevantChallenge.date.epochSeconds}:F>")
-                    .setTimestamp(relevantChallenge.date.toJavaInstant())
+                    .setDescription("The previous challenge has already concluded. Next one will be at <t:${registerTime.epochSeconds}:F>")
+                    .setTimestamp(registerTime.toJavaInstant())
             }
             SeriesObserver.State.REGISTRATION -> {
                 registerBtnBuilder.setDisabled(false)
                 arBuilder.addComponents(registerBtnBuilder.build())
                 embed.setColor(Color.CYAN)
-                    .setDescription("You can **register right now**. The challenge will start <t:${relevantChallenge.date.epochSeconds}:R>")
-                    .setTimestamp(relevantChallenge.date.toJavaInstant())
+                    .setDescription("You can **register right now**. The challenge will start <t:${registerTime.epochSeconds}:R>")
+                    .setTimestamp(registerTime.toJavaInstant())
             }
             SeriesObserver.State.RUNNING -> {
                 embed.setColor(Color.GREEN)
                     .setDescription("**There is an LIVE Quest** right now, if you registered in time you can still compete!")
-                    .setTimestamp(relevantChallenge.date.toJavaInstant())
+                    .setTimestamp(registerTime.toJavaInstant())
                 registerBtnBuilder
                     .setLabel("Play Now!")
                     .setEmoji("🚀")
@@ -70,8 +73,8 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
             }
             SeriesObserver.State.SERIES_CONCLUDED -> {
                 embed.setColor(Color.ORANGE)
-                    .setDescription("The last series concluded <t:${relevantChallenge.date.epochSeconds}:R> and there is no active challenge right now, but you can still practice with older sets.")
-                    .setTimestamp(relevantChallenge.date.toJavaInstant())
+                    .setDescription("The last series concluded <t:${registerTime.epochSeconds}:R> and there is no active challenge right now, but you can still practice with older sets.")
+                    .setTimestamp(registerTime.toJavaInstant())
             }
         }
 

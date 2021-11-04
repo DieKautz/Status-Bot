@@ -10,6 +10,7 @@ import org.javacord.api.entity.message.component.ButtonStyle
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.interaction.SlashCommandInteraction
 import util.SeriesObserver
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 
@@ -26,7 +27,7 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
         val embed = EmbedBuilder()
             .setAuthor("Next Up:")
             .setTitle("Quest ${nextIndex + 1}!")
-            .setDescription("This challenge starts <t:${relevantChallenge.date.epochSeconds}:R>")
+            .setDescription("This challenge starts <t:${relevantChallenge.date.minus(Duration.Companion.hours(1)).epochSeconds}:R>")
             .setThumbnail("https://api.stellar.quest/badge/${relevantChallenge.badges.main}")
             .setTimestamp(relevantChallenge.date.toJavaInstant())
         val practiceBtn = Button.link("https://quest.stellar.org/play", "Practice Set 1-3", "🎯")
@@ -62,7 +63,7 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays upcoming quests.") {
                     .setLabel("Play Now!")
                 arBuilder.addComponents(registerBtnBuilder.build())
                 embed.setDescription(
-                    "This challenge starts <t:${nextChallenge.date.epochSeconds}:R>. \n" +
+                    "This challenge starts <t:${nextChallenge.date.minus(Duration.Companion.hours(1)).epochSeconds}:R>. \n" +
                             "But there is also one still running **right now** started <t:${relevantChallenge.date.epochSeconds}:R>"
                 )
             }
