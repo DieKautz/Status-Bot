@@ -1,6 +1,7 @@
 package command
 
 import command.cmd.RefetchCommand
+import command.cmd.StatusCommand
 import org.javacord.api.DiscordApi
 import org.javacord.api.event.interaction.SlashCommandCreateEvent
 import org.javacord.api.interaction.ServerSlashCommandPermissionsBuilder
@@ -33,9 +34,10 @@ class SlashCommandHandler(private val api: DiscordApi, private val commands: Lis
             commands.map { it.toSlashCommandBuilder() }
         ).join()
 
-        val ownerId = 290464744794750976 //DieKautz#3846
+        val ownerId = 290464744794750976//DieKautz#3846
         val lumenaryGid = 836587722185375784
         val refetchCmdId = api.globalSlashCommands.join().first { it.name == RefetchCommand().name }.id
+        val statusCmdId = api.globalSlashCommands.join().first { it.name == StatusCommand().name }.id
         api.servers.forEach { srv ->
             api.batchUpdateSlashCommandPermissions(
                 srv, mutableListOf(
@@ -45,7 +47,14 @@ class SlashCommandHandler(private val api: DiscordApi, private val commands: Lis
                             SlashCommandPermissions.create(ownerId, SlashCommandPermissionType.USER, true),
                             SlashCommandPermissions.create(lumenaryGid, SlashCommandPermissionType.ROLE, true)
                         )
-                    )
+                    ),
+                    ServerSlashCommandPermissionsBuilder(
+                        statusCmdId,
+                        listOf(
+                            SlashCommandPermissions.create(ownerId, SlashCommandPermissionType.USER, true),
+                            SlashCommandPermissions.create(lumenaryGid, SlashCommandPermissionType.ROLE, true)
+                        )
+                    ),
                 )
             )
         }
