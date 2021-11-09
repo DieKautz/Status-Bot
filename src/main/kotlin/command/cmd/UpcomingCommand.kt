@@ -13,8 +13,9 @@ class UpcomingCommand : SlashCommand("upcoming", "Displays the upcoming quest.")
 
         if (state == SeriesObserver.State.SERIES_CONCLUDED) {
             interaction.createImmediateResponder()
-                .setContent("\"The last series concluded <t:${SeriesObserver.getRelevant().date.epochSeconds}:R> " +
-                        "and there is no active challenge right now, but you can still practice with older sets.\"")
+                .setContent("The last series concluded <t:${SeriesObserver.getRelevant().date.epochSeconds}:R> " +
+                        "and there is no active challenge right now, but you can still practice with older sets.")
+                .addComponents(ActionRowHelper.getActionRow(state))
                 .respond()
             return
         }
