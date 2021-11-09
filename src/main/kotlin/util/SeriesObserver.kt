@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import util.series.Challenge
 import util.series.Series
+import kotlin.time.Duration
 
 object SeriesObserver {
 
@@ -52,13 +53,14 @@ object SeriesObserver {
     private fun getPrev(): Challenge = challenges.last { it.date < Clock.System.now() }
     fun getNext(): Challenge = challenges.first { it.date > Clock.System.now() }
 
-    fun nextIndex(): Int = challenges.indexOfFirst { it.date > Clock.System.now() }
+    fun getRelevantIndex(): Int = when(getState()) {
+        State.RUNNING, State.SERIES_CONCLUDED -> challenges.indexOfLast { it.date < Clock.System.now() }
+        else -> challenges.indexOfFirst { it.date > Clock.System.now() }
+    }
 
-    fun getRelevant(): Challenge {
-        return when(getState()) {
-            State.RUNNING, State.SERIES_CONCLUDED -> getPrev()
-            else -> getNext()
-        }
+    fun getRelevant() = when(getState()) {
+        State.RUNNING, State.SERIES_CONCLUDED -> getPrev()
+        else -> getNext()
     }
 
     fun getState(): State {
@@ -66,14 +68,14 @@ object SeriesObserver {
         if (now <= challenges.first().date) {
             return State.AWAITING_SERIES_START
         }
-        if (now >= challenges.last().date) {
-            return State.SERIES_CONCLUDED
-        }
         val prevChallenge = getPrev()
-        val nextChallenge = getNext()
         if (prevChallenge.date.until(now, DateTimeUnit.HOUR) < 4) {
             return State.RUNNING
         }
+        if (now >= challenges.last().date) {
+            return State.SERIES_CONCLUDED
+        }
+        val nextChallenge = getNext()
         if (now.until(nextChallenge.date, DateTimeUnit.MINUTE) < 60) {
             return State.REGISTRATION
         }
