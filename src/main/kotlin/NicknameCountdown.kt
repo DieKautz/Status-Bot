@@ -34,7 +34,7 @@ object NicknameCountdown {
 
     private fun updatePersona() {
         val now = Clock.System.now()
-        val nextName = "S${SeriesObserver.currentSeriesNum}Q${SeriesObserver.nextIndex()+1}"
+        val nextName = "S${SeriesObserver.currentSeriesNum}Q${SeriesObserver.getRelevantIndex()+1}"
 
         val diffToRelevant = now.epochSeconds - SeriesObserver.getRelevant().date.epochSeconds
         val diffTime = Duration.Companion.seconds((diffToRelevant)/10*10).absoluteValue
@@ -46,8 +46,7 @@ object NicknameCountdown {
         }
 
         // cap nickname refreshes
-        if (diffTime.inWholeDays > 7 && (now.epochSeconds - lastExec) < 24*60*60 // refresh only daily when >7days
-                    || diffTime.inWholeHours > 48 && (now.epochSeconds - lastExec) < 60*60 // refresh only hourly when >2 days
+        if (diffTime.inWholeDays > 7 && (now.epochSeconds - lastExec) < 60*60 // refresh only hourly when >7 days
                     || diffTime.inWholeMinutes > 120 && (now.epochSeconds - lastExec) < 60 // refresh only every min when >2 hours
                     || diffTime.inWholeSeconds > 120 && (now.epochSeconds - lastExec) < 30 // refresh only every 30 sec when >2 mins
                     || (now.epochSeconds - lastExec) < 10 // refresh only every 10 sec at most
