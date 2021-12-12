@@ -8,15 +8,15 @@ plugins {
 }
 
 group = "dev.diekautz"
-version = "1.0.4"
+version = "1.0.4-log4jfix"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.apache.logging.log4j:log4j-core:2.14.1")
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.14.1")
+    implementation("org.apache.logging.log4j:log4j-core:2.15.0")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.15.0")
     implementation("ch.qos.logback:logback-classic:1.2.6")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
