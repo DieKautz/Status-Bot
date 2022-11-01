@@ -11,14 +11,16 @@ import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import util.series.Challenge
 import util.series.Series
-import kotlin.time.Duration
 
 object SeriesObserver {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     var currentFetchUrl: String = System.getenv("FETCH_URL")
-    var currentSeriesNum: Int = 4
+
+    val seriesNumRegex = Regex("series=(\\d+)")
+    var currentSeriesNum: Int = seriesNumRegex.matchEntire(currentFetchUrl)?.groups?.first()?.value?.toIntOrNull() ?: -1
+
     private lateinit var currentSeries: Series
     lateinit var challenges: List<Challenge>
 
