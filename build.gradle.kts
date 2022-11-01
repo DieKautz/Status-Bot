@@ -8,24 +8,24 @@ plugins {
 }
 
 group = "dev.diekautz"
-version = "1.0.4-log4jfix"
+version = "1.0.5"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.apache.logging.log4j:log4j-core:2.15.0")
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.15.0")
-    implementation("ch.qos.logback:logback-classic:1.2.6")
+    implementation("org.apache.logging.log4j:log4j-core:2.19.0")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.19.0")
+    implementation("ch.qos.logback:logback-classic:1.4.4")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
-    implementation("io.ktor:ktor-client-core:1.6.4")
-    implementation("io.ktor:ktor-client-apache:1.6.4")
-    implementation("org.javacord:javacord:3.3.2")
+    implementation("io.ktor:ktor-client-core-jvm:2.1.3")
+    implementation("io.ktor:ktor-client-apache-jvm:2.1.3")
+    implementation("org.javacord:javacord:3.6.0")
 }
 
 tasks.withType<KotlinCompile>() {
