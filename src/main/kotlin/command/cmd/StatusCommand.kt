@@ -24,5 +24,5 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
 
     override fun toSlashCommandBuilder() =
         super.toSlashCommandBuilder()
-            .setDefaultPermission(false)
+            .setDefaultDisabled()
 }

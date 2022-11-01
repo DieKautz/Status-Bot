@@ -2,6 +2,7 @@ package util
 
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -19,7 +20,7 @@ object SeriesObserver {
     var currentFetchUrl: String = System.getenv("FETCH_URL")
 
     val seriesNumRegex = Regex("series=(\\d+)")
-    var currentSeriesNum: Int = seriesNumRegex.matchEntire(currentFetchUrl)?.groups?.first()?.value?.toIntOrNull() ?: -1
+    var currentSeriesNum: Int = seriesNumRegex.find(currentFetchUrl)?.groupValues?.get(1)?.toIntOrNull() ?: -1
 
     private lateinit var currentSeries: Series
     lateinit var challenges: List<Challenge>
@@ -34,7 +35,7 @@ object SeriesObserver {
         runBlocking {
             var response = ""
             runCatching {
-                response = httpClient.get(seriesEndpoint)
+                response = httpClient.get(seriesEndpoint).bodyAsText()
             }.onFailure {
                 throw IllegalArgumentException("Invalid URL provided!")
             }
