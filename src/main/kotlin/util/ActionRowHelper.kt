@@ -5,7 +5,7 @@ import util.SeriesObserver.State.*
 
 object ActionRowHelper {
     fun getActionRow(state: SeriesObserver.State): ActionRow {
-        val practiceBtn = Button.link("https://quest.stellar.org/play", "Practice Set 1-3", "🎯")
+        val practiceBtn = Button.link("https://github.com/tyvdh/soroban-pioneer-quest", "Practice Pioneer Quest", "🥳")
         val registerBtn = ButtonBuilder()
             .setUrl("https://quest.stellar.org/play/live")
             .setStyle(ButtonStyle.LINK)

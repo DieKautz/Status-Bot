@@ -18,7 +18,7 @@ object EmbedHelper {
                 when (state) {
                     AWAITING_SERIES_START -> {
                         "We are waiting on the start of the ${SeriesObserver.currentSeriesNum.toOrdinal()} stellar quest! 🤗\n" +
-                                "Its set to start <t:${unlockLobbyTime - 60 * 60}>"
+                                "Registration starts <t:${unlockLobbyTime - 60 * 60}>"
                     }
                     WAITING_BETWEEN, REGISTRATION, RUNNING -> {
                         "This is the ${questNum.toOrdinal()} of $questsCount total quests in series ${SeriesObserver.currentSeriesNum}!"
@@ -40,8 +40,7 @@ object EmbedHelper {
             )
         if (state != SERIES_CONCLUDED) {
             embed
-                .addInlineField("Registration starts", "<t:${unlockLobbyTime - 60 * 60}:R>")
-                .addInlineField("Lobbies unlock", "<t:$unlockLobbyTime:R>")
+                .addInlineField("Lobbies unlocking", "<t:$unlockLobbyTime:R>")
         }
         return embed
     }
