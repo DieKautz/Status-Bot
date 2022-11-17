@@ -2,6 +2,7 @@ package command.cmd
 
 import NicknameCountdown
 import command.SlashCommand
+import org.javacord.api.entity.message.MessageFlag
 import org.javacord.api.entity.permission.PermissionType
 import org.javacord.api.interaction.SlashCommandInteraction
 import org.javacord.api.interaction.SlashCommandOption
@@ -16,33 +17,34 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
     override fun handle(interaction: SlashCommandInteraction) {
         log.warn("refetch requested from ${interaction.user.discriminatedName}")
 
-        interaction.respondLater().thenAccept { interactionResponseUpdater ->
-            interactionResponseUpdater
-                .setContent("Fetching...")
-                .update()
 
-            runCatching {
-                val url = interaction.getOptionStringValueByIndex(0).get()
-                SeriesObserver.fetchSeries(url)
-                SeriesObserver.currentSeriesNum = interaction.getOptionLongValueByIndex(1).get().toInt()
-            }.onFailure {
-                log.error("refetch failed with ${it.message}")
-                interactionResponseUpdater
-                    .setContent("**Refetch failed**: `${it.message}`")
-                    .update()
-            }.onSuccess {
-                interactionResponseUpdater
-                    .setContent(
-                        "Successfully loaded ${SeriesObserver.challenges.count()} challenges of Series No.${SeriesObserver.currentSeriesNum} from `${
-                            interaction.getOptionStringValueByIndex(
-                                0
-                            ).get()
-                        }`"
-                    )
-                    .update()
-                NicknameCountdown.forceUpdatePersona()
+        interaction.createImmediateResponder()
+            .setContent("Fetching...")
+            .setFlags(MessageFlag.EPHEMERAL)
+            .respond().thenAccept { interactionResponseUpdater ->
+
+                runCatching {
+                    val url = interaction.getOptionStringValueByIndex(0).get()
+                    SeriesObserver.fetchSeries(url)
+                    SeriesObserver.currentSeriesNum = interaction.getOptionLongValueByIndex(1).get().toInt()
+                }.onFailure {
+                    log.error("refetch failed with ${it.message}")
+                    interactionResponseUpdater
+                        .setContent("**Refetch failed**: `${it.message}`")
+                        .update()
+                }.onSuccess {
+                    interactionResponseUpdater
+                        .setContent(
+                            "Successfully loaded ${SeriesObserver.challenges.count()} challenges of series ${SeriesObserver.currentSeriesNum} from `${
+                                interaction.getOptionStringValueByIndex(
+                                    0
+                                ).get()
+                            }`"
+                        )
+                        .update()
+                    NicknameCountdown.forceUpdatePersona()
+                }
             }
-        }
 
     }
 

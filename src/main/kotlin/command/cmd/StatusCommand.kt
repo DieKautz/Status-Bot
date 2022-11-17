@@ -1,9 +1,8 @@
 package command.cmd
 
 import command.SlashCommand
+import org.javacord.api.entity.message.MessageFlag
 import org.javacord.api.interaction.SlashCommandInteraction
-import util.ActionRowHelper
-import util.EmbedHelper
 import util.SeriesObserver
 
 
@@ -14,11 +13,12 @@ class StatusCommand : SlashCommand("status", "Displays current quest status.") {
         val state = SeriesObserver.getState()
         val questNum = SeriesObserver.challenges.indexOf(relevantChallenge) + 1
         val questsCount = SeriesObserver.challenges.count()
+        val fetchUrl = SeriesObserver.currentFetchUrl
 
         interaction.createImmediateResponder()
-            .setContent("current state is `$state` for quest `$questNum/$questsCount` in series ${SeriesObserver.currentSeriesNum}")
-            .addEmbed(EmbedHelper.getEmbed(relevantChallenge, state))
-            .addComponents(ActionRowHelper.getActionRow(state))
+            .setContent("current state is `$state` for quest `$questNum/$questsCount` in series ${SeriesObserver.currentSeriesNum}\n" +
+                    "fetching from $fetchUrl")
+            .setFlags(MessageFlag.EPHEMERAL)
             .respond()
     }
 
