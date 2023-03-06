@@ -17,7 +17,7 @@ class SlashCommandHandler(private val api: DiscordApi, private val commands: Lis
         if (event == null) return
         val interaction = event.slashCommandInteraction
         val cmd = commands.first { it.name == interaction.commandName }
-        Logger.info("received /${cmd.name} from ${interaction.user.discriminatedName}" + if (interaction.server.isPresent) " on ${interaction.server.get().name}" else "")
+        Logger.info("received /${interaction.fullCommandName} from ${interaction.user.discriminatedName}" + if (interaction.server.isPresent) " on ${interaction.server.get().name}" else "")
         cmd.handle(interaction)
     }
 

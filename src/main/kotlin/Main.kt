@@ -1,9 +1,6 @@
 import command.SlashCommandHandler
-import command.cmd.RefetchCommand
-import command.cmd.StatusCommand
-import command.cmd.UpcomingCommand
+import command.cmd.WatchLeaderboardCommand
 import org.javacord.api.DiscordApiBuilder
-import util.SeriesObserver
 
 fun main() {
 
@@ -12,16 +9,9 @@ fun main() {
         .login()
         .join()
 
-    SeriesObserver.fetchSeries()
-
     SlashCommandHandler(
         api, listOf(
-            StatusCommand(),
-            UpcomingCommand(),
-            RefetchCommand(),
+            WatchLeaderboardCommand()
         )
     )
-
-    val srv = api.getServerById(System.getenv("TIMER_SERVER_ID")).get()
-    NicknameCountdown.startTimer(srv)
 }
