@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.diekautz"
-version = "1.0.6"
+version = "fca00c-2.0.0"
 
 repositories {
     mavenCentral()
