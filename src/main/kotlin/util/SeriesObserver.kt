@@ -9,13 +9,11 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.until
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import org.slf4j.LoggerFactory
+import org.tinylog.kotlin.Logger
 import util.series.Challenge
 import util.series.Series
 
 object SeriesObserver {
-
-    private val log = LoggerFactory.getLogger(javaClass)
 
     var currentFetchUrl: String = System.getenv("FETCH_URL")
 
@@ -31,7 +29,7 @@ object SeriesObserver {
     }
 
     fun fetchSeries(seriesEndpoint: String = currentFetchUrl) {
-        log.info("Fetching series data from endpoint ($seriesEndpoint)")
+        Logger.info("Fetching series data from endpoint ($seriesEndpoint)")
         runBlocking {
             var response = ""
             runCatching {
@@ -48,8 +46,8 @@ object SeriesObserver {
                 throw IllegalStateException("Invalid JSON at endpoint: ${it.message}")
             }
             currentFetchUrl = seriesEndpoint
-            log.info("Successfully updated series! Loaded ${challenges.count()} in series No. $currentSeriesNum")
-            log.info("NEW state is ${getState()}")
+            Logger.info("Successfully updated series! Loaded ${challenges.count()} in series No. $currentSeriesNum")
+            Logger.info("NEW state is ${getState()}")
         }
     }
 

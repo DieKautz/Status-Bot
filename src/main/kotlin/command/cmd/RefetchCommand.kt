@@ -7,15 +7,13 @@ import org.javacord.api.entity.permission.PermissionType
 import org.javacord.api.interaction.SlashCommandInteraction
 import org.javacord.api.interaction.SlashCommandOption
 import org.javacord.api.interaction.SlashCommandOptionType
-import org.slf4j.LoggerFactory
+import org.tinylog.kotlin.Logger
 import util.SeriesObserver
 
 class RefetchCommand : SlashCommand("refetch", "Refetch current series data from this endpoint.") {
 
-    private val log = LoggerFactory.getLogger(javaClass)
-
     override fun handle(interaction: SlashCommandInteraction) {
-        log.warn("refetch requested from ${interaction.user.discriminatedName}")
+        Logger.warn("refetch requested from ${interaction.user.discriminatedName}")
 
 
         interaction.createImmediateResponder()
@@ -24,11 +22,11 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
             .respond().thenAccept { interactionResponseUpdater ->
 
                 runCatching {
-                    val url = interaction.getOptionStringValueByIndex(0).get()
+                    val url = interaction.getArgumentStringValueByName("url").get()
                     SeriesObserver.fetchSeries(url)
-                    SeriesObserver.currentSeriesNum = interaction.getOptionLongValueByIndex(1).get().toInt()
+                    SeriesObserver.currentSeriesNum = interaction.getArgumentLongValueByName("num").get().toInt()
                 }.onFailure {
-                    log.error("refetch failed with ${it.message}")
+                    Logger.error("refetch failed with ${it.message}")
                     interactionResponseUpdater
                         .setContent("**Refetch failed**: `${it.message}`")
                         .update()
@@ -36,9 +34,7 @@ class RefetchCommand : SlashCommand("refetch", "Refetch current series data from
                     interactionResponseUpdater
                         .setContent(
                             "Successfully loaded ${SeriesObserver.challenges.count()} challenges of series ${SeriesObserver.currentSeriesNum} from `${
-                                interaction.getOptionStringValueByIndex(
-                                    0
-                                ).get()
+                                interaction.getArgumentStringValueByName("url").get()
                             }`"
                         )
                         .update()

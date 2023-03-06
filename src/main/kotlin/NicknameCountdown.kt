@@ -3,7 +3,7 @@ import kotlinx.datetime.toJavaInstant
 import org.javacord.api.DiscordApi
 import org.javacord.api.entity.activity.ActivityType
 import org.javacord.api.entity.server.Server
-import org.slf4j.LoggerFactory
+import org.tinylog.kotlin.Logger
 import util.SeriesObserver
 import util.SeriesObserver.State.*
 import java.time.temporal.ChronoUnit
@@ -12,8 +12,6 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 object NicknameCountdown {
-
-    private val log = LoggerFactory.getLogger(javaClass)
     private lateinit var api: DiscordApi
     private lateinit var srv: Server
 
@@ -48,7 +46,7 @@ object NicknameCountdown {
 
         val currState = SeriesObserver.getState()
         if (currState != lastState) {
-            log.info("state is now $currState")
+            Logger.info("state is now $currState")
             lastExec = 0
         }
 
