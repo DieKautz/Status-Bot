@@ -70,7 +70,7 @@ class LeaderboardObserver(
             val leaderboard = json.decodeToSequence<LeaderboardEntry>(bodyIs).toList().sortedBy { it.rank }
             leaderboard.take(announceThreshold.toInt()).forEach { entry ->
                 val oldRank = lastLeaderboard.find { it.isSame(entry) }?.rank
-                if (oldRank == null || oldRank < entry.rank) {
+                if (oldRank == null || oldRank > entry.rank) {
                     updates += LeaderboardUpdate(entry, oldRank)
                 }
             }
@@ -92,18 +92,19 @@ class LeaderboardObserver(
         updates.forEach { embed.addInlineField(it.entry.nameWithEmoji, it.entry.displayString()) }
         announceChannel.sendMessage(title, embed, buttons.build())
         updates.firstOrNull { it.entry.rank <= 3 }?.let {
-            announceChannel.api.yourself.updateNickname(announceChannel.server, it.entry.nameWithEmoji)
+            announceChannel.api.yourself.updateNickname(announceChannel.server, "latest: " + it.entry.nameWithEmoji)
             announceChannel.api.updateActivity(ActivityType.COMPETING, name)
         }
     }
 
     private fun updateTitle(updates: List<LeaderboardUpdate>): String {
-        updates.firstOrNull { it.entry.rank == 1 }?.let {
-            return "${it.entry.name} took the lead!"
-        }
-        updates.firstOrNull { it.entry.rank == 2 }?.let {
-            val first = lastLeaderboard[0].name
-            return "${it.entry.name} is getting very close to $first!"
+        val newFirst = updates.find { it.entry.rank == 1 }
+        val newSecond = updates.find { it.entry.rank == 2 }
+        if (newFirst != null) {
+            return "${newFirst.entry.name} took the lead!"
+        } else if (newSecond != null) {
+            val first = lastLeaderboard.minBy { it.rank }.name
+            return "${newSecond.entry.name} is getting very close to $first!"
         }
         return updates.joinToString(", ") { it.entry.name } + " joined the top $announceThreshold"
     }
